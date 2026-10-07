@@ -143,3 +143,16 @@ test('real named-pipe mock verifies handshake, ping/pong, activity ACK, and clea
     assert.deepEqual(packets.filter(p => p.cmd === 'SET_ACTIVITY').map(p => p.args.activity), [activity(123), null]);
   } finally { rpc.disconnect(); sockets.forEach(s => s.destroy()); await new Promise(resolve => server.close(resolve)); }
 });
+test('every recently active Codex chat folder is listed for rotation, newest first', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'astra-rotate-'));
+  try {
+    const db = new DatabaseSync(join(dir, 'state_5.sqlite'));
+    db.exec('CREATE TABLE threads(model TEXT, updated_at INTEGER, archived INTEGER, source TEXT, agent_path TEXT, cwd TEXT, id TEXT, project_id TEXT)');
+    const add = db.prepare('INSERT INTO threads(model, updated_at, archived, source, agent_path, cwd) VALUES (?, ?, 0, ?, NULL, ?)');
+    add.run('gpt-6-astra', 990, 'vscode', 'C:/Users/me/Documents/Projects/paper-girl');
+    add.run('gpt-6-astra', 999, 'vscode', "C:/Users/me/Documents/ChatGPT/Mommy's World");
+    add.run('gpt-6-astra', 100, 'vscode', 'C:\Users\me\Documents\Projects\stale');
+    db.close();
+    assert.deepEqual(detectAstra(dir, 1_000_000, true).projects, ["Mommy's World", 'paper-girl']);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

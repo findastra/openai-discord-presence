@@ -54,7 +54,7 @@ Protocol references: [Discord Rich Presence](https://docs.discord.com/developers
 
 ## Project sharing
 
-Enable **Show my project on Discord** in the local connection settings. Leave Project name blank to use the name of the folder the latest Codex chat works in (for example `Mommy's 2`), or enter a fixed friendly label. The activity reads **Working on [project]**; it never shows the chat title or the full path. Chats without a chosen folder run in Codex's dated scratch folders, so those show the chat's saved Codex project name instead, or generic activity if there is none. It follows metadata updates rather than window focus. Detection becomes generic after five minutes without recent Astra metadata. Sharing is opt-in for each installation.
+Enable **Show my project on Discord** in the local connection settings. Leave Project name blank to use the name of the folder the latest Codex chat works in (for example `Mommy's 2`), or enter a fixed friendly label. The activity reads **Working on [project]**; it never shows the chat title or the full path. Chats without a chosen folder run in Codex's dated scratch folders, so those show the chat's saved Codex project name instead, or generic activity if there is none. It follows metadata updates rather than window focus. When several chats are active at once, the card shows each project for 15 seconds in turn. Detection becomes generic after five minutes without recent Astra metadata. Sharing is opt-in for each installation.
 
 The Discord app icon uses the original swirl without text. Animated Rich Presence images require an external hosted image URL according to Discord's documentation; uploaded presence assets are static. This version uses the static asset.
 

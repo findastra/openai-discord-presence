@@ -64,8 +64,13 @@ async function sync() {
   }
 }
 
-function currentProject() {
-  return config.shareProject ? (config.projectName || detection.project || '') : '';
+// Several active projects take turns on the card, ROTATE_MS each (Discord allows ~5 updates per 20 s).
+const ROTATE_MS = 15000;
+function currentProject(now = Date.now()) {
+  if (!config.shareProject) return '';
+  if (config.projectName) return config.projectName;
+  const list = detection.projects?.length ? detection.projects : [detection.project].filter(Boolean);
+  return list.length ? list[Math.floor(now / ROTATE_MS) % list.length] : '';
 }
 
 function send(res, status, body, type = 'application/json') {
