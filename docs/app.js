@@ -44,7 +44,7 @@ async function refresh() {
     }
     $('status').textContent = state.message;
     $('project-preview').textContent = state.project ? `Working on ${state.project}` : 'Exploring ideas';
-    $('model-preview').textContent = `Using ${state.modelLabel}`;
+    $('model-preview').textContent = `Using ${state.modelLabel}${state.effortLabel ? ` on ${state.effortLabel}` : ''}`;
     $('dot').className = state.published ? 'live' : '';
     $('badge').textContent = state.published ? 'SHARING' : state.mode === 'off' ? 'OFF' : 'WAITING';
     $('auto').setAttribute('aria-pressed', String(state.mode === 'auto'));

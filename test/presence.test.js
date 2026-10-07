@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { Presence, isRecentTask, modelLabel, effortLabel, activity, validateConfig } from '../src/presence.js';
+import { GALAXY_URL, Presence, isRecentTask, modelLabel, effortLabel, activity, validateConfig } from '../src/presence.js';
 import { detectAstra, folderProject } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
@@ -48,9 +48,9 @@ test('exact model ids become friendly names, and the raw id shows on hover', () 
 test('payload contains only fixed public fields and elapsed timestamp', () => {
   assert.equal(activity(null), null);
   assert.deepEqual(activity(17), { type: 0, name: 'OpenAI', details: 'Using GPT-6 Astra', state: 'Exploring ideas',
-    timestamps: { start: 17 }, assets: { large_image: 'astra_galaxy', large_text: 'GPT-6 Astra' } });
+    timestamps: { start: 17 }, assets: { large_image: GALAXY_URL, large_text: 'GPT-6 Astra' } });
   assert.throws(() => validateConfig({ clientId: 'not-a-token' }));
-  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'https://example.com/image' }));
+  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'http://example.com/image' }));
 });
 test('project name is the chat folder, never a path, Codex scratch folder or home folder', () => {
   const home = 'C:\\Users\\me';
@@ -155,4 +155,10 @@ test('every recently active Codex chat folder is listed for rotation, newest fir
     db.close();
     assert.deepEqual(detectAstra(dir, 1_000_000, true).projects, ["Mommy's World", 'paper-girl']);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('card art defaults to the hosted galaxy and accepts asset keys or https links only', () => {
+  assert.equal(validateConfig({ clientId: '123456789012345678' }).image, GALAXY_URL);
+  assert.equal(validateConfig({ clientId: '123456789012345678', image: 'astra_galaxy' }).image, 'astra_galaxy');
+  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'http://insecure.example/x.png' }));
+  assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'javascript:alert(1)' }));
 });

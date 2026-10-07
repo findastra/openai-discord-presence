@@ -47,7 +47,10 @@ export function effortLabel(id) {
   return EFFORTS[effort] ?? cap(effort);
 }
 
-export function activity(startedAt, image = 'astra_galaxy', project = '', model = '', effort = '') {
+// Card art: loaded by Discord straight from the public repo, so nobody has to upload it in the Developer Portal.
+export const GALAXY_URL = 'https://raw.githubusercontent.com/findastra/openai-discord-presence/main/public/galaxy.png';
+
+export function activity(startedAt, image = GALAXY_URL, project = '', model = '', effort = '') {
   if (startedAt === null) return null;
   const name = modelLabel(model) || 'GPT-6 Astra';
   // The effort level only means something next to a known model.
@@ -65,8 +68,9 @@ export function activity(startedAt, image = 'astra_galaxy', project = '', model 
 
 export function validateConfig(input) {
   const clientId = String(input.clientId ?? '').trim();
-  const image = String(input.image ?? 'astra_galaxy').trim();
+  const image = String(input.image || GALAXY_URL).trim();
   if (!/^\d{17,20}$/.test(clientId)) throw new Error('Paste the 17–20 digit Discord Application ID. No token needed.');
-  if (!/^[a-z0-9_-]{1,128}$/.test(image)) throw new Error('Use an uploaded asset key, such as astra_galaxy.');
+  // Either an uploaded Discord asset key or an https image link.
+  if (!/^[a-z0-9_-]{1,128}$/.test(image) && !/^https:\/\/[^\s"<>]{1,240}$/.test(image)) throw new Error('Use an uploaded asset key or an https image link.');
   return { clientId, image, shareProject: input.shareProject === true, projectName: projectLabel(input.projectName), automaticOnStart: input.automaticOnStart === true };
 }
