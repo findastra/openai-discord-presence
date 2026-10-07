@@ -31,3 +31,9 @@
 - Fixed project identity: resolve the current task's saved Codex project assignment and display name; never fall back to a folder basename. Confirmed the saved Mommy's World project uses the Mommy's 2 folder. Unknown projects remain generic unless a friendly-name override is provided.
 - Run on Windows startup now installs/removes the per-user startup entry immediately. Eight tests pass.
 - Claude companion remains pending clarification of Claude desktop, Code, or browser. Separate local companion processes can coexist, but Discord decides which activities appear; simultaneous display alongside all games and Spotify has not been verified.
+
+## 2026-10-06
+- The card names the exact model in use (e.g. "Using GPT-6 Astra", "Using GPT-5.6 Sol"); hovering the galaxy shows the raw model id. Automatic now shares for any model on the newest primary Codex task, not only `gpt-6-astra`. Switching models keeps the timer. Nine tests pass.
+- Project sharing keeps showing the saved Codex project name (e.g. "Astra's Infinite Pole"), never the chat title.
+- The local folder moved to `Documents\Projects\astra-discord-presence`, beside `claude-discord-presence`; the Windows startup entry was rewritten for the new path. Folder locations aren't stored in this repository.
+- Claude Presence, the sibling app, lives at https://github.com/findastra/claude-discord-presence and shows the exact Claude model and the working folder as its project.
