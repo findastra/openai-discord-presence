@@ -38,3 +38,4 @@
 - The local folder moved to `Documents\Projects\astra-discord-presence`, beside `claude-discord-presence`; the Windows startup entry was rewritten for the new path. Folder locations aren't stored in this repository.
 - Claude Presence, the sibling app, lives at https://github.com/findastra/claude-discord-presence and shows the exact Claude model and the working folder as its project.
 - Requested change: "Working on" now shows the folder the latest Codex chat works in (e.g. `Mommy's 2`), not the saved Codex project name. Chats in Codex's dated scratch folders fall back to the saved project name. Ten tests pass.
+- Card title: Discord rejects "OpenAI" and "Anthropic" as registered application names (error 50277). The activity now sets its documented `name` field, so the bold title reads **OpenAI** (and **Anthropic** on Claude Presence) without renaming the application. User confirmed the Anthropic title live on their profile.

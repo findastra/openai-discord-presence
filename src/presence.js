@@ -43,6 +43,8 @@ export function activity(startedAt, image = 'astra_galaxy', project = '', model 
   const name = modelLabel(model) || 'GPT-6 Astra';
   return {
     type: 0,
+    // Card title. Discord shows this instead of the registered app name, which can't be a brand name.
+    name: 'OpenAI',
     details: `Using ${name}`,
     state: projectLabel(project) ? `Working on ${projectLabel(project)}` : 'Exploring ideas',
     timestamps: { start: startedAt },

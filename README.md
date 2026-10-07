@@ -8,7 +8,7 @@ A free Windows companion that displays **GPT-6 Astra**, the Astra spiral artwork
 
 1. Download and extract the ZIP. Install [Node.js 24 or later](https://nodejs.org/en/download) if it is not already installed.
 2. Double-click **Start Astra Presence.cmd**. Your browser opens the local controls. No npm install is needed.
-3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application named **GPT-6 Astra**. The application name determines the title Discord displays.
+3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application with any name (Discord blocks some brand names). The card's bold title always reads **OpenAI**: the app sends it with each update, in place of the application name.
 4. Upload `public/astra-galaxy.png` under **Rich Presence → Art Assets**, named **astra_galaxy**. Copy the Application ID from General Information.
 5. In the local app, expand **Connect to Discord**, paste the Application ID, and save.
 6. Open Discord desktop, sign in, and enable activity sharing in Discord's settings. Choose **Start session** or **Automatic** in Astra Presence.
