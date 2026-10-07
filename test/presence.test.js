@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { Presence, isRecentAstra, activity, validateConfig } from '../src/presence.js';
+import { Presence, isRecentTask, modelLabel, activity, validateConfig } from '../src/presence.js';
 import { detectAstra } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
@@ -25,12 +25,25 @@ test('automatic stops on idle and resumes with a fresh timer', () => {
   assert.equal(p.update(false, 20000), null);
   assert.equal(p.update(true, 30000), 30);
 });
-test('model and timestamp must be valid and recent', () => {
+test('any model counts when its timestamp is valid and recent', () => {
   const now = 1_000_000;
-  assert.equal(isRecentAstra({ model: 'gpt-6-astra', updated_at: 999 }, now), true);
-  for (const row of [null, { model: 'gpt-5.6-sol', updated_at: 999 },
+  assert.equal(isRecentTask({ model: 'gpt-6-astra', updated_at: 999 }, now), true);
+  assert.equal(isRecentTask({ model: 'gpt-5.6-sol', updated_at: 999 }, now), true);
+  for (const row of [null, { model: '', updated_at: 999 },
     { model: 'gpt-6-astra', updated_at: 700 }, { model: 'gpt-6-astra', updated_at: 1100 },
-    { model: 'gpt-6-astra', updated_at: 'invalid' }]) assert.equal(isRecentAstra(row, now), false);
+    { model: 'gpt-6-astra', updated_at: 'invalid' }]) assert.equal(isRecentTask(row, now), false);
+});
+test('exact model ids become friendly names, and the raw id shows on hover', () => {
+  assert.equal(modelLabel('gpt-6-astra'), 'GPT-6 Astra');
+  assert.equal(modelLabel('gpt-5.6-sol'), 'GPT-5.6 Sol');
+  assert.equal(modelLabel('gpt-6-luna'), 'GPT-6 Luna');
+  assert.equal(modelLabel('gpt-4o'), 'GPT-4o');
+  assert.equal(modelLabel('o3-pro'), 'o3-pro');
+  assert.equal(modelLabel(''), '');
+  const card = activity(17, 'astra_galaxy', '', 'gpt-5.6-sol');
+  assert.equal(card.details, 'Using GPT-5.6 Sol');
+  assert.equal(card.assets.large_text, 'gpt-5.6-sol');
+  assert.equal(card.assets.large_image, 'astra_galaxy');
 });
 test('payload contains only fixed public fields and elapsed timestamp', () => {
   assert.equal(activity(null), null);
@@ -39,7 +52,7 @@ test('payload contains only fixed public fields and elapsed timestamp', () => {
   assert.throws(() => validateConfig({ clientId: 'not-a-token' }));
   assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'https://example.com/image' }));
 });
-test('read-only detector excludes subagents and respects a newer non-Astra primary task', () => {
+test('read-only detector excludes subagents and follows the newest primary task model', () => {
   const dir = mkdtempSync(join(tmpdir(), 'astra-detect-'));
   try {
     const db = new DatabaseSync(join(dir, 'state_5.sqlite'));
@@ -52,8 +65,10 @@ test('read-only detector excludes subagents and respects a newer non-Astra prima
     assert.equal(detectAstra(dir, 1_000_000).project, '');
     db.exec("UPDATE threads SET id = 'task', project_id = 'project' WHERE model = 'gpt-6-astra'"); writeFileSync(join(dir, '.codex-global-state.json'), JSON.stringify({'local-projects': {project: {name: "Mommy's Basis of Design"}}})); assert.equal(detectAstra(dir, 1_000_000, true).project, "Mommy's Basis of Design");
     assert.equal(detectAstra(dir, 2_000_000, true).project, '');
+    assert.equal(detectAstra(dir, 1_000_000).model, 'gpt-6-astra');
     add.run('gpt-5.6-sol', 1001, 0, 'vscode', null);
-    assert.equal(detectAstra(dir, 1_002_000).active, false);
+    assert.equal(detectAstra(dir, 1_002_000).model, 'gpt-5.6-sol');
+    assert.equal(detectAstra(dir, 2_000_000).model, '');
     db.close();
     assert.equal(detectAstra(join(dir, 'missing')).active, false);
   } finally { rmSync(dir, { recursive: true, force: true }); }

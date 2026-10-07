@@ -2,7 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
-import { isRecentAstra, projectLabel } from './presence.js';
+import { isRecentTask, modelLabel, projectLabel } from './presence.js';
 
 export function resolveProject(home, thread) {
   try {
@@ -26,9 +26,10 @@ export function detectAstra(home = process.env.CODEX_HOME || join(homedir(), '.c
       WHERE archived = 0 AND source IN ('vscode', 'cli')
       AND (agent_path IS NULL OR agent_path = '/root')
       ORDER BY updated_at DESC LIMIT 1`).get();
-    const active = isRecentAstra(row, now);
+    const active = isRecentTask(row, now);
+    const model = active ? projectLabel(row.model) : '';
     const project = shareProject && active ? resolveProject(home, row) : '';
-    return { active, project, message: active ? 'Recent Astra activity detected in Codex.' : 'Waiting for recent Astra activity in Codex.' };
+    return { active, model, project, message: active ? `Recent ${modelLabel(model)} activity detected in Codex.` : 'Waiting for recent activity in Codex.' };
   } catch {
     return { active: false, message: 'Automatic detection unavailable. Manual mode still works.' };
   } finally { db?.close(); }

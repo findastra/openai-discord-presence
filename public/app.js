@@ -44,12 +44,13 @@ async function refresh() {
     }
     $('status').textContent = state.message;
     $('project-preview').textContent = state.project ? `Working on ${state.project}` : 'Exploring ideas';
+    $('model-preview').textContent = `Using ${state.modelLabel}`;
     $('dot').className = state.published ? 'live' : '';
     $('badge').textContent = state.published ? 'SHARING' : state.mode === 'off' ? 'OFF' : 'WAITING';
     $('auto').setAttribute('aria-pressed', String(state.mode === 'auto'));
     $('manual').textContent = state.mode === 'manual' ? 'Session started' : 'Start session';
     $('mode-note').textContent = state.mode === 'auto'
-      ? 'Automatic uses the latest Codex task update. Hides after 5 minutes without activity; it does not track window focus.'
+      ? 'Automatic uses the latest Codex task and names its exact model. Hides after 5 minutes without activity; it does not track window focus.'
       : 'Manual sessions stay on until you stop them or quit this app.';
     drawTimer();
   } catch {

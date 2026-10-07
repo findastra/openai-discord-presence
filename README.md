@@ -18,7 +18,7 @@ No bot token, API key, paid API, card, hosting subscription, or Discord server b
 ## Modes
 
 - **Manual:** Starts an elapsed timer and stays on until Stop sharing or Quit app. Works while using Astra anywhere.
-- **Automatic:** An experimental local adapter checks the latest non-archived primary Codex CLI/desktop task's model and update timestamp every five seconds. Shares when that task is `gpt-6-astra` and was updated in the last five minutes. Stops when stale, another model becomes latest, or detection fails. It doesn't track foreground focus or measure exact model computation time. Background metadata updates can extend the window; long silent reasoning or reading can exceed it. Use Manual when this heuristic doesn't suit you.
+- **Automatic:** An experimental local adapter checks the latest non-archived primary Codex CLI/desktop task's model and update timestamp every five seconds. Shares when that task was updated in the last five minutes and names its exact model, for example **Using GPT-6 Astra** or **Using GPT-5.6 Sol**; hovering the galaxy shows the raw id (`gpt-6-astra`). Switching models keeps the timer running. Stops when stale or detection fails. It doesn't track foreground focus or measure exact model computation time. Background metadata updates can extend the window; long silent reasoning or reading can exceed it. Use Manual when this heuristic doesn't suit you.
 - **Off:** Disconnects immediately. The app starts with sharing off unless you enable Automatic on startup.
 
 The timer measures this companion's continuous active session, starting at detection or your manual click. It survives Discord reconnects, but resets after stopping, inactivity, mode changes, or app restart. Closing the browser tab leaves the companion running; **Quit app** stops it.
@@ -33,7 +33,7 @@ A hosted website cannot access Discord's local IPC pipe. Each visitor runs their
 
 The companion binds to `127.0.0.1` only, validates exact Host/Origin for changes, and has no external telemetry. Automatic mode opens the newest `~/.codex/state_N.sqlite` read-only and selects `model` and `updated_at`, with filters to exclude subagents and archived tasks. When project sharing is enabled, it reads the task project assignment and saved Codex project name locally. It never sends full paths or reads prompts, titles, or transcripts. This database is an internal implementation detail and may change; failure hides the activity.
 
-The public Discord Application ID, image key, project-sharing preference, and optional custom project name are stored in `.local/config.json`, which is ignored by Git and excluded from the ZIP. Session state is kept in memory. The Discord IPC handshake may contain account information; it is neither logged nor retained. The outbound presence payload contains activity text, timestamp, asset key, and the project name when enabled.
+The public Discord Application ID, image key, project-sharing preference, and optional custom project name are stored in `.local/config.json`, which is ignored by Git and excluded from the ZIP. Session state is kept in memory. The Discord IPC handshake may contain account information; it is neither logged nor retained. The outbound presence payload contains activity text with the model name, timestamp, asset key, and the project name when enabled.
 
 ## Development
 

@@ -1,7 +1,8 @@
 export const IDLE_MS = 5 * 60 * 1000;
 
-export function isRecentAstra(row, now = Date.now()) {
-  if (!row || row.model !== 'gpt-6-astra') return false;
+// Any model counts (GPT-6 Astra, GPT-5.6 Sol, ...) so the card can name exactly which one is in use.
+export function isRecentTask(row, now = Date.now()) {
+  if (!row || !row.model) return false;
   const age = now - Number(row.updated_at) * 1000;
   return Number.isFinite(age) && age >= -5000 && age < IDLE_MS;
 }
@@ -26,14 +27,26 @@ export function projectLabel(value) {
   return String(value ?? '').replace(/[\x00-\x1f\x7f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 110);
 }
 
-export function activity(startedAt, image = 'astra_galaxy', project = '') {
+const cap = word => word.charAt(0).toUpperCase() + word.slice(1);
+
+// Friendly name for an exact model id: 'gpt-6-astra' → 'GPT-6 Astra', 'gpt-5.6-sol' → 'GPT-5.6 Sol'.
+// Unrecognized ids are shown exactly as written. Empty means the model is unknown.
+export function modelLabel(id) {
+  const model = projectLabel(id).slice(0, 64);
+  const gpt = /^gpt-([\d.]+[a-z]?)((?:-[a-z0-9.]+)*)$/i.exec(model);
+  if (gpt) return ['GPT-' + gpt[1], ...gpt[2].split('-').filter(Boolean).map(cap)].join(' ');
+  return model;
+}
+
+export function activity(startedAt, image = 'astra_galaxy', project = '', model = '') {
   if (startedAt === null) return null;
+  const name = modelLabel(model) || 'GPT-6 Astra';
   return {
     type: 0,
-    details: 'Using GPT-6 Astra',
+    details: `Using ${name}`,
     state: projectLabel(project) ? `Working on ${projectLabel(project)}` : 'Exploring ideas',
     timestamps: { start: startedAt },
-    assets: { large_image: image, large_text: 'GPT-6 Astra' },
+    assets: { large_image: image, large_text: projectLabel(model).slice(0, 64) || name },
   };
 }
 
