@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -57,6 +57,10 @@ test('project name is the chat folder, never a path, Codex scratch folder or hom
   assert.equal(folderProject("\\\\?\\C:\\Users\\me\\Documents\\ChatGPT\\Mommy's 2", home), "Mommy's 2");
   assert.equal(folderProject('C:\\Users\\me\\Documents\\Projects\\paper-girl\\', home), 'paper-girl');
   assert.equal(folderProject('\\\\?\\C:\\Users\\me\\Documents\\Codex\\2026-10-03\\lau', home), '');
+  // Codex's own folders are not projects: the plain Codex folder and ChatGPT-project folders named by an internal id.
+  assert.equal(folderProject('\\\\?\\C:\\Users\\me\\Documents\\Codex', home), '');
+  assert.equal(folderProject('\\\\?\\C:\\Users\\me\\.codex\\.chatgpt-projects\\g-p-6ac5a16085448191b30cc823b9c0e81f', home), '');
+  assert.equal(folderProject('D:\\Games\\Codex Mod', home), 'Codex Mod');
   assert.equal(folderProject('C:\\Users\\me', home), '');
   assert.equal(folderProject(null, home), '');
 });
@@ -69,12 +73,17 @@ test('read-only detector excludes subagents and follows the newest primary task 
     add.run('gpt-6-astra', 999, 0, 'vscode', null);
     add.run('codex-auto-review', 1000, 0, '{"subagent":{}}', null);
     assert.equal(detectAstra(dir, 1_000_000).active, true);
-    db.prepare('UPDATE threads SET cwd = ? WHERE model = ?').run("C:\\Users\\private\\Mommy's Basis of Design", 'gpt-6-astra');
+    const folder = join(dir, "Mommy's Basis of Design"); mkdirSync(folder);
+    db.prepare('UPDATE threads SET cwd = ? WHERE model = ?').run(folder, 'gpt-6-astra');
     assert.equal(detectAstra(dir, 1_000_000).project, '');
     db.exec("UPDATE threads SET id = 'task', project_id = 'project' WHERE model = 'gpt-6-astra'"); writeFileSync(join(dir, '.codex-global-state.json'), JSON.stringify({'local-projects': {project: {name: "Saved Project"}}}));
     assert.equal(detectAstra(dir, 1_000_000, true).project, "Mommy's Basis of Design");
     db.prepare('UPDATE threads SET cwd = ? WHERE model = ?').run('\\\\?\\C:\\Users\\private\\Documents\\Codex\\2026-10-03\\lau', 'gpt-6-astra');
     assert.equal(detectAstra(dir, 1_000_000, true).project, 'Saved Project');
+    // A folder that was renamed or deleted must not show its old name: fall back to the saved Codex project.
+    db.prepare('UPDATE threads SET cwd = ? WHERE model = ?').run(join(dir, "Mommy's 2"), 'gpt-6-astra');
+    assert.equal(detectAstra(dir, 1_000_000, true).project, 'Saved Project');
+    assert.deepEqual(detectAstra(dir, 1_000_000, true).projects, ['Saved Project']);
     assert.equal(detectAstra(dir, 2_000_000, true).project, '');
     assert.equal(detectAstra(dir, 1_000_000).model, 'gpt-6-astra');
     add.run('gpt-5.6-sol', 1001, 0, 'vscode', null);
@@ -149,8 +158,9 @@ test('every recently active Codex chat folder is listed for rotation, newest fir
     const db = new DatabaseSync(join(dir, 'state_5.sqlite'));
     db.exec('CREATE TABLE threads(model TEXT, updated_at INTEGER, archived INTEGER, source TEXT, agent_path TEXT, cwd TEXT, id TEXT, project_id TEXT)');
     const add = db.prepare('INSERT INTO threads(model, updated_at, archived, source, agent_path, cwd) VALUES (?, ?, 0, ?, NULL, ?)');
-    add.run('gpt-6-astra', 990, 'vscode', 'C:/Users/me/Documents/Projects/paper-girl');
-    add.run('gpt-6-astra', 999, 'vscode', "C:/Users/me/Documents/ChatGPT/Mommy's World");
+    mkdirSync(join(dir, 'paper-girl')); mkdirSync(join(dir, "Mommy's World"));
+    add.run('gpt-6-astra', 990, 'vscode', join(dir, 'paper-girl'));
+    add.run('gpt-6-astra', 999, 'vscode', join(dir, "Mommy's World"));
     add.run('gpt-6-astra', 100, 'vscode', 'C:\Users\me\Documents\Projects\stale');
     db.close();
     assert.deepEqual(detectAstra(dir, 1_000_000, true).projects, ["Mommy's World", 'paper-girl']);

@@ -1,5 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { IDLE_MS, isRecentTask, modelLabel, projectLabel } from './presence.js';
@@ -13,14 +13,25 @@ export function resolveProject(home, thread) {
   } catch { return ''; }
 }
 
+// Folders Codex makes for itself are not projects: the plain Documents\Codex folder, its dated scratch
+// folders (Documents\Codex\2026-10-03\lau) and ChatGPT-project folders under ~\.codex (named by an internal id).
+const CODEX_OWN_FOLDERS = [/[\\/]\.codex([\\/]|$)/i, /[\\/]Codex[\\/]\d{4}-\d{2}-\d{2}([\\/]|$)/i, /[\\/]Documents[\\/]Codex$/i];
+const stripLongPath = cwd => String(cwd ?? '').replace(/^\\\\\?\\/, '').replace(/[\\/]+$/, '');
+
 // Project name = the folder the chat works in (its last path part, never the full path).
-// Chats without a chosen folder run in Codex's dated scratch folders (Documents\Codex\2026-10-03\lau);
-// those fall back to the chat's saved Codex project name. The home folder isn't a project.
+// Codex's own folders and the home folder aren't projects; those chats fall back to their saved Codex project name.
 export function folderProject(cwd, userHome = homedir()) {
-  const path = String(cwd ?? '').replace(/^\\\\\?\\/, '').replace(/[\\/]+$/, '');
-  if (!path || /[\\/]Codex[\\/]\d{4}-\d{2}-\d{2}([\\/]|$)/i.test(path)) return '';
+  const path = stripLongPath(cwd);
+  if (!path || CODEX_OWN_FOLDERS.some(own => own.test(path))) return '';
   if (path.toLowerCase() === userHome.replace(/[\\/]+$/, '').toLowerCase()) return '';
   return projectLabel(path.split(/[\\/]/).pop());
+}
+
+// The project to show for one chat: its folder if that folder still exists (a renamed or deleted folder
+// would show a name that no longer exists), otherwise the chat's saved Codex project name.
+export function chatProject(home, row) {
+  const path = stripLongPath(row.cwd);
+  return (path && existsSync(path) ? folderProject(row.cwd) : '') || resolveProject(home, row);
 }
 
 export function detectAstra(home = process.env.CODEX_HOME || join(homedir(), '.codex'), now = Date.now(), shareProject = false) {
@@ -40,14 +51,14 @@ export function detectAstra(home = process.env.CODEX_HOME || join(homedir(), '.c
     const active = isRecentTask(row, now);
     const model = active ? projectLabel(row.model) : '';
     const effort = active ? projectLabel(row.reasoning_effort ?? '') : '';
-    const project = shareProject && active ? (folderProject(row.cwd) || resolveProject(home, row)) : '';
+    const project = shareProject && active ? chatProject(home, row) : '';
     // All recently active chats, newest first, each counted once.
     let projects = [];
     if (shareProject && active) {
       const recent = db.prepare(`SELECT id, project_id, cwd FROM threads
         WHERE archived = 0 AND source IN ('vscode', 'cli') AND (agent_path IS NULL OR agent_path = '/root')
         AND updated_at >= ? ORDER BY updated_at DESC LIMIT 25`).all(Math.floor((now - IDLE_MS) / 1000));
-      projects = [...new Set(recent.map(r => folderProject(r.cwd) || resolveProject(home, r)).filter(Boolean))];
+      projects = [...new Set(recent.map(r => chatProject(home, r)).filter(Boolean))];
     }
     return { active, model, effort, project, projects, message: active ? `Recent ${modelLabel(model)} activity detected in Codex.` : 'Waiting for recent activity in Codex.' };
   } catch {
