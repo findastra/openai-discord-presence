@@ -101,7 +101,7 @@ const server = http.createServer(async (req, res) => {
   if (req.headers.host !== `127.0.0.1:${port}`) return send(res, 403, { error: 'Local requests only.' });
   try {
     if (req.method === 'GET' && req.url === '/api/status') {
-      return send(res, 200, { app: 'astra-discord-presence', config, mode: presence.mode, startedAt: presence.startedAt, published,
+      return send(res, 200, { app: 'openai-discord-presence', config, mode: presence.mode, startedAt: presence.startedAt, published,
         connected: rpc.ready, message, startupEnabled: startupEnabled(), project: currentProject(), model: detection.model, modelLabel: modelLabel(detection.model) || 'GPT-6 Astra', detection: detection.message });
     }
     if (req.method === 'POST') {

@@ -15,7 +15,7 @@ const files = ['README.md', 'DEVELOPMENT.md', 'LICENSE', 'package.json', 'Start 
 const entries = []; const central = []; let offset = 0;
 for (const file of files) {
   const data = readFileSync(join(root, file));
-  const name = Buffer.from(`astra-discord-presence/${file}`);
+  const name = Buffer.from(`openai-discord-presence/${file}`);
   const crc = crc32(data);
   const local = Buffer.alloc(30);
   local.writeUInt32LE(0x04034b50); local.writeUInt16LE(20, 4); local.writeUInt16LE(0x800, 6);

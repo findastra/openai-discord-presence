@@ -2,7 +2,7 @@
 
 A free Windows companion that displays **GPT-6 Astra**, the Astra spiral artwork, and an elapsed timer on your Discord profile.
 
-**[Open the app](https://findastra.github.io/astra-discord-presence/)** · **[Download for Windows](https://findastra.github.io/astra-discord-presence/downloads/astra-presence-windows.zip)**
+**[Open the app](https://findastra.github.io/openai-discord-presence/)** · **[Download for Windows](https://findastra.github.io/openai-discord-presence/downloads/astra-presence-windows.zip)**
 
 ## Use it
 

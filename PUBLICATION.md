@@ -1,8 +1,8 @@
 # Publication verification — 2026-09-13
 
-- Published companion build: 8a69852, findastra/astra-discord-presence main.
-- Live website: https://findastra.github.io/astra-discord-presence/
-- Windows ZIP: https://findastra.github.io/astra-discord-presence/downloads/astra-presence-windows.zip
+- Published companion build: 8a69852, findastra/openai-discord-presence main.
+- Live website: https://findastra.github.io/openai-discord-presence/
+- Windows ZIP: https://findastra.github.io/openai-discord-presence/downloads/astra-presence-windows.zip
 - Verified HTTP 200 for the page, JavaScript, stylesheet, swirl image, and Windows ZIP.
 - Live ZIP SHA-256 matched the local packaged build exactly. ZIP contains 16 allowlisted files, including automatic startup setup, and no local configuration.
 - Reloaded the public page and visually verified its styled interface and download controls.

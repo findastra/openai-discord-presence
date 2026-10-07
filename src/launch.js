@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 const url = 'http://127.0.0.1:38761/';
 async function alive() {
   try { const r = await fetch(url + 'api/status', { signal: AbortSignal.timeout(600) });
-    const data = await r.json(); return data.app === 'astra-discord-presence';
+    const data = await r.json(); return data.app === 'openai-discord-presence';
   } catch { return false; }
 }
 if (!(await alive())) {

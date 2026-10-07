@@ -1,5 +1,5 @@
 {
-  "name": "astra-discord-presence",
+  "name": "openai-discord-presence",
   "version": "0.1.0",
   "private": true,
   "description": "A tiny local Discord Rich Presence companion for GPT-6 Astra.",

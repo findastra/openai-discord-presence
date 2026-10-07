@@ -13,11 +13,11 @@
 ## Validation and publication
 
 - Seven automated tests passed, including session timing, metadata filtering, frame decoding, and a mock named-pipe handshake/activity acknowledgement/clear. Static HTML, CSS and PNG returned HTTP 200 with expected content types.
-- Initial code pushed to the public findastra/astra-discord-presence repository (2c282b6). GitHub Pages configured for main:/docs; source save confirmed by GitHub.
+- Initial code pushed to the public findastra/openai-discord-presence repository (2c282b6). GitHub Pages configured for main:/docs; source save confirmed by GitHub.
 - The user's missing Discord presence was traced to a stopped local companion and an empty Application ID. Restarted the companion as a hidden background process. Discord desktop is running. Application creation is prepared, awaiting the user's approval of Discord Developer Terms and Policy.
 - Local setup now opens automatically when no Application ID is configured. Start/Automatic lead to setup instead of appearing to start a session without an ID.
 - The user completed application creation in Discord. Configured its public Application ID locally, uploaded and saved the requested artwork as astra_galaxy, and started a manual session. The running companion reports connected:true and published:true after Discord acknowledged SET_ACTIVITY; the local UI displays the live elapsed timer. Visibility on another person's profile view remains unverified and depends on Discord activity privacy settings.
-- Public GitHub Pages app verified at https://findastra.github.io/astra-discord-presence/. The Windows ZIP download returned HTTP 200 with ZIP content type; the native ZIP reader enumerated all 14 intended files. Seven automated checks passed again after the setup guidance fix.
+- Public GitHub Pages app verified at https://findastra.github.io/openai-discord-presence/. The Windows ZIP download returned HTTP 200 with ZIP content type; the native ZIP reader enumerated all 14 intended files. Seven automated checks passed again after the setup guidance fix.
 
 - Updated the Discord application icon to a star-swirl variant with a readable GPT-6 label, created from the existing reference artwork. Saved the source icon as public/astra-icon.png; the original website hero and presence artwork remain available.
 
@@ -35,7 +35,7 @@
 ## 2026-10-06
 - The card names the exact model in use (e.g. "Using GPT-6 Astra", "Using GPT-5.6 Sol"); hovering the galaxy shows the raw model id. Automatic now shares for any model on the newest primary Codex task, not only `gpt-6-astra`. Switching models keeps the timer. Nine tests pass.
 - Project sharing keeps showing the saved Codex project name (e.g. "Astra's Infinite Pole"), never the chat title.
-- The local folder moved to `Documents\Projects\astra-discord-presence`, beside `claude-discord-presence`; the Windows startup entry was rewritten for the new path. Folder locations aren't stored in this repository.
-- Claude Presence, the sibling app, lives at https://github.com/findastra/claude-discord-presence and shows the exact Claude model and the working folder as its project.
+- The local folder moved to `Documents\Projects\openai-discord-presence`, beside `anthropic-discord-presence`; the Windows startup entry was rewritten for the new path. Folder locations aren't stored in this repository.
+- Claude Presence, the sibling app, lives at https://github.com/findastra/anthropic-discord-presence and shows the exact Claude model and the working folder as its project.
 - Requested change: "Working on" now shows the folder the latest Codex chat works in (e.g. `Mommy's 2`), not the saved Codex project name. Chats in Codex's dated scratch folders fall back to the saved project name. Ten tests pass.
 - Card title: Discord rejects "OpenAI" and "Anthropic" as registered application names (error 50277). The activity now sets its documented `name` field, so the bold title reads **OpenAI** (and **Anthropic** on Claude Presence) without renaming the application. User confirmed the Anthropic title live on their profile.
