@@ -31,7 +31,7 @@ A hosted website cannot access Discord's local IPC pipe. Each visitor runs their
 
 ## Privacy
 
-The companion binds to `127.0.0.1` only, validates exact Host/Origin for changes, and has no external telemetry. Automatic mode opens the newest `~/.codex/state_N.sqlite` read-only and selects `model` and `updated_at`, with filters to exclude subagents and archived tasks. When project sharing is enabled, it reads the task project assignment and saved Codex project name locally. It never sends full paths or reads prompts, titles, or transcripts. This database is an internal implementation detail and may change; failure hides the activity.
+The companion binds to `127.0.0.1` only, validates exact Host/Origin for changes, and has no external telemetry. Automatic mode opens the newest `~/.codex/state_N.sqlite` read-only and selects `model` and `updated_at`, with filters to exclude subagents and archived tasks. When project sharing is enabled, it reads the task folder and saved Codex project name locally and keeps only the folder's last name. It never sends full paths or reads prompts, titles, or transcripts. This database is an internal implementation detail and may change; failure hides the activity.
 
 The public Discord Application ID, image key, project-sharing preference, and optional custom project name are stored in `.local/config.json`, which is ignored by Git and excluded from the ZIP. Session state is kept in memory. The Discord IPC handshake may contain account information; it is neither logged nor retained. The outbound presence payload contains activity text with the model name, timestamp, asset key, and the project name when enabled.
 
@@ -54,7 +54,7 @@ Protocol references: [Discord Rich Presence](https://docs.discord.com/developers
 
 ## Project sharing
 
-Enable **Show my project on Discord** in the local connection settings. Leave Project name blank to use the latest recent Astra saved project name, or enter a fixed friendly label. The activity reads **Working on [project]**. It follows metadata updates rather than window focus; unrecognized project assignments show generic activity instead of a potentially incorrect folder name. Detection becomes generic after five minutes without recent Astra metadata. Sharing is opt-in for each installation.
+Enable **Show my project on Discord** in the local connection settings. Leave Project name blank to use the name of the folder the latest Codex chat works in (for example `Mommy's 2`), or enter a fixed friendly label. The activity reads **Working on [project]**; it never shows the chat title or the full path. Chats without a chosen folder run in Codex's dated scratch folders, so those show the chat's saved Codex project name instead, or generic activity if there is none. It follows metadata updates rather than window focus. Detection becomes generic after five minutes without recent Astra metadata. Sharing is opt-in for each installation.
 
 The Discord app icon uses the original swirl without text. Animated Rich Presence images require an external hosted image URL according to Discord's documentation; uploaded presence assets are static. This version uses the static asset.
 

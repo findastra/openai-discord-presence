@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { Presence, isRecentTask, modelLabel, activity, validateConfig } from '../src/presence.js';
-import { detectAstra } from '../src/detector.js';
+import { detectAstra, folderProject } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
 import { randomUUID } from 'node:crypto';
@@ -52,6 +52,14 @@ test('payload contains only fixed public fields and elapsed timestamp', () => {
   assert.throws(() => validateConfig({ clientId: 'not-a-token' }));
   assert.throws(() => validateConfig({ clientId: '123456789012345678', image: 'https://example.com/image' }));
 });
+test('project name is the chat folder, never a path, Codex scratch folder or home folder', () => {
+  const home = 'C:\\Users\\me';
+  assert.equal(folderProject("\\\\?\\C:\\Users\\me\\Documents\\ChatGPT\\Mommy's 2", home), "Mommy's 2");
+  assert.equal(folderProject('C:\\Users\\me\\Documents\\Projects\\paper-girl\\', home), 'paper-girl');
+  assert.equal(folderProject('\\\\?\\C:\\Users\\me\\Documents\\Codex\\2026-10-03\\lau', home), '');
+  assert.equal(folderProject('C:\\Users\\me', home), '');
+  assert.equal(folderProject(null, home), '');
+});
 test('read-only detector excludes subagents and follows the newest primary task model', () => {
   const dir = mkdtempSync(join(tmpdir(), 'astra-detect-'));
   try {
@@ -63,7 +71,10 @@ test('read-only detector excludes subagents and follows the newest primary task 
     assert.equal(detectAstra(dir, 1_000_000).active, true);
     db.prepare('UPDATE threads SET cwd = ? WHERE model = ?').run("C:\\Users\\private\\Mommy's Basis of Design", 'gpt-6-astra');
     assert.equal(detectAstra(dir, 1_000_000).project, '');
-    db.exec("UPDATE threads SET id = 'task', project_id = 'project' WHERE model = 'gpt-6-astra'"); writeFileSync(join(dir, '.codex-global-state.json'), JSON.stringify({'local-projects': {project: {name: "Mommy's Basis of Design"}}})); assert.equal(detectAstra(dir, 1_000_000, true).project, "Mommy's Basis of Design");
+    db.exec("UPDATE threads SET id = 'task', project_id = 'project' WHERE model = 'gpt-6-astra'"); writeFileSync(join(dir, '.codex-global-state.json'), JSON.stringify({'local-projects': {project: {name: "Saved Project"}}}));
+    assert.equal(detectAstra(dir, 1_000_000, true).project, "Mommy's Basis of Design");
+    db.prepare('UPDATE threads SET cwd = ? WHERE model = ?').run('\\\\?\\C:\\Users\\private\\Documents\\Codex\\2026-10-03\\lau', 'gpt-6-astra');
+    assert.equal(detectAstra(dir, 1_000_000, true).project, 'Saved Project');
     assert.equal(detectAstra(dir, 2_000_000, true).project, '');
     assert.equal(detectAstra(dir, 1_000_000).model, 'gpt-6-astra');
     add.run('gpt-5.6-sol', 1001, 0, 'vscode', null);
