@@ -48,7 +48,8 @@ export function effortLabel(id) {
 }
 
 // Card art: loaded by Discord straight from the public repo, so nobody has to upload it in the Developer Portal.
-export const GALAXY_URL = 'https://raw.githubusercontent.com/findastra/openai-discord-presence/main/public/galaxy.png';
+// Bump ?v= whenever galaxy.png changes so Discord fetches the new image instead of a cached one.
+export const GALAXY_URL = 'https://raw.githubusercontent.com/findastra/openai-discord-presence/main/public/galaxy.png?v=4';
 
 export function activity(startedAt, image = GALAXY_URL, project = '', model = '', effort = '') {
   if (startedAt === null) return null;
