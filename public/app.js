@@ -54,7 +54,7 @@ async function refresh() {
       : 'Manual sessions stay on until you stop them or quit this app.';
     drawTimer();
   } catch {
-    $('status').textContent = 'The local companion is offline. Open Start Astra Presence again.';
+    $('status').textContent = 'The local companion is offline. Open Start OpenAI Presence again.';
     $('dot').className = '';
     $('badge').textContent = 'OFFLINE';
     state = null;
@@ -124,7 +124,7 @@ if (hosted) {
   $('mode-note').textContent = 'Try the timer here. Download the companion to share it on Discord.';
   $('status').textContent = 'Discord presence needs the companion running on your Windows computer.';
   if (location.protocol === 'file:') {
-    $('download').querySelector('a').href = 'https://findastra.github.io/openai-discord-presence/downloads/astra-presence-windows.zip';
+    $('download').querySelector('a').href = 'https://findastra.github.io/openai-discord-presence/downloads/openai-presence-windows.zip';
   }
 } else void refresh();
 setInterval(refresh, 2000);

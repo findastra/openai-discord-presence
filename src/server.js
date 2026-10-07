@@ -9,8 +9,8 @@ import { startupEnabled, setStartup } from './windows-startup.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const configPath = join(root, '.local', 'config.json');
-const port = Number(process.env.ASTRA_PORT || 38761);
-if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid ASTRA_PORT.');
+const port = Number(process.env.OPENAI_PRESENCE_PORT || 38761);
+if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid OPENAI_PRESENCE_PORT.');
 const origin = `http://127.0.0.1:${port}`;
 let config = { clientId: '', image: 'astra_galaxy' };
 try { config = validateConfig(JSON.parse(readFileSync(configPath, 'utf8'))); } catch { /* Setup stays available. */ }
@@ -148,7 +148,7 @@ const server = http.createServer(async (req, res) => {
 server.requestTimeout = 10000;
 server.headersTimeout = 10000;
 server.on('error', error => {
-  console.error(error.code === 'EADDRINUSE' ? `Astra Presence may already be running. Open ${origin}` : error.message);
+  console.error(error.code === 'EADDRINUSE' ? `OpenAI Presence may already be running. Open ${origin}` : error.message);
   clearInterval(interval);
   rpc.disconnect();
   process.exitCode = 1;
@@ -167,6 +167,6 @@ async function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 server.listen(port, '127.0.0.1', () => {
-  console.log(`Astra Presence: ${origin}\nClose with Quit app or Ctrl+C.`);
+  console.log(`OpenAI Presence: ${origin}\nClose with Quit app or Ctrl+C.`);
   void sync();
 });

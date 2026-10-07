@@ -9,7 +9,7 @@ for (const file of ['app.js', 'style.css', 'astra-galaxy.png']) copyFileSync(joi
 writeFileSync(join(docs, 'index.html'), readFileSync(join(root, 'public/index.html'), 'utf8').replace('<body>', '<body data-hosted>'));
 writeFileSync(join(docs, '.nojekyll'), '');
 // Standard uncompressed ZIP: no executable bundler, package download, or build dependency.
-const files = ['README.md', 'DEVELOPMENT.md', 'LICENSE', 'package.json', 'Start Astra Presence.cmd', 'Enable Automatic Startup.cmd', 'scripts/startup.js',
+const files = ['README.md', 'DEVELOPMENT.md', 'LICENSE', 'package.json', 'Start OpenAI Presence.cmd', 'Enable Automatic Startup.cmd', 'scripts/startup.js',
   ...readdirSync(join(root, 'src')).filter(f => f.endsWith('.js')).map(f => `src/${f}`),
   ...['index.html', 'style.css', 'app.js', 'astra-galaxy.png'].map(f => `public/${f}`)];
 const entries = []; const central = []; let offset = 0;
@@ -31,5 +31,5 @@ for (const file of files) {
 const directory = Buffer.concat(central); const end = Buffer.alloc(22);
 end.writeUInt32LE(0x06054b50); end.writeUInt16LE(files.length, 8); end.writeUInt16LE(files.length, 10);
 end.writeUInt32LE(directory.length, 12); end.writeUInt32LE(offset, 16);
-writeFileSync(join(docs, 'downloads/astra-presence-windows.zip'), Buffer.concat([...entries, directory, end]));
+writeFileSync(join(docs, 'downloads/openai-presence-windows.zip'), Buffer.concat([...entries, directory, end]));
 console.log(`Prepared public page and Windows ZIP (${files.length} allowlisted files).`);

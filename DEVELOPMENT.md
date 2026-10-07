@@ -39,3 +39,8 @@
 - Claude Presence, the sibling app, lives at https://github.com/findastra/anthropic-discord-presence and shows the exact Claude model and the working folder as its project.
 - Requested change: "Working on" now shows the folder the latest Codex chat works in (e.g. `Mommy's 2`), not the saved Codex project name. Chats in Codex's dated scratch folders fall back to the saved project name. Ten tests pass.
 - Card title: Discord rejects "OpenAI" and "Anthropic" as registered application names (error 50277). The activity now sets its documented `name` field, so the bold title reads **OpenAI** (and **Anthropic** on Claude Presence) without renaming the application. User confirmed the Anthropic title live on their profile.
+
+## 2026-10-07
+- Renamed the repository to `openai-discord-presence` and the app to **OpenAI Presence** (sibling: `anthropic-discord-presence`, **Anthropic Presence**). It covers every OpenAI model, so the old GPT-6 Astra-only name no longer fit. The public page moved to https://findastra.github.io/openai-discord-presence/; GitHub Pages doesn't redirect the old address.
+- Renamed with it: start file (`Start OpenAI Presence.cmd`), Windows startup entry (`OpenAI Presence.vbs`, which also removes the old `Astra Presence.vbs`), download ZIP (`openai-presence-windows.zip`) and the port setting (`OPENAI_PRESENCE_PORT`).
+- Kept on purpose: names of the products the app detects (GPT-6 Astra, Codex), the Astra galaxy artwork and its Discord asset key `astra_galaxy` (Discord asset keys can't be renamed), and earlier entries in this log.

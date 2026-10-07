@@ -6,19 +6,21 @@ import { validateConfig } from '../src/presence.js';
 if (process.platform !== 'win32' || !process.env.APPDATA) throw new Error('Windows startup is available on Windows only.');
 const root = fileURLToPath(new URL('../', import.meta.url));
 const startup = join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
-const target = join(startup, 'Astra Presence.vbs');
+const target = join(startup, 'OpenAI Presence.vbs');
+// Remove the launcher from before the rename so the app never starts twice.
+try { unlinkSync(join(startup, 'Astra Presence.vbs')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
 if (process.argv.includes('--remove')) {
   try { unlinkSync(target); } catch (error) { if (error.code !== 'ENOENT') throw error; }
-  console.log('Astra Presence will no longer launch at Windows sign-in.');
+  console.log('OpenAI Presence will no longer launch at Windows sign-in.');
 } else {
   // Use the exact installed Node and app paths, with VBScript string escaping.
   const command = `"${process.execPath}" "${join(root, 'src', 'launch.js')}" --background`;
-  const script = `' Astra Presence: starts this user's local companion with no window.\r\nSet shell = CreateObject("WScript.Shell")\r\nshell.Run "${command.replaceAll('"', '""')}", 0, False\r\n`;
+  const script = `' OpenAI Presence: starts this user's local companion with no window.\r\nSet shell = CreateObject("WScript.Shell")\r\nshell.Run "${command.replaceAll('"', '""')}", 0, False\r\n`;
   const configPath = join(root, '.local', 'config.json');
   const config = validateConfig(JSON.parse(readFileSync(configPath, 'utf8')));
   config.automaticOnStart = true;
   mkdirSync(startup, { recursive: true });
   writeFileSync(target, script);
   writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
-  console.log('Astra Presence will start quietly in Automatic mode at Windows sign-in. Keep this app folder in place.');
+  console.log('OpenAI Presence will start quietly in Automatic mode at Windows sign-in. Keep this app folder in place.');
 }

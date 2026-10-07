@@ -1,3 +1,3 @@
 @echo off
-call "%~dp0Start Astra Presence.cmd" --install-startup
+call "%~dp0Start OpenAI Presence.cmd" --install-startup
 pause

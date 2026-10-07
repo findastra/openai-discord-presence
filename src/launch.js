@@ -10,7 +10,7 @@ if (!(await alive())) {
   const child = spawn(process.execPath, [fileURLToPath(new URL('./server.js', import.meta.url))], {
     detached: true, windowsHide: true, stdio: 'ignore',
   });
-  child.on('error', () => { console.error('Could not start Astra Presence. Run node src/server.js for details.'); });
+  child.on('error', () => { console.error('Could not start OpenAI Presence. Run node src/server.js for details.'); });
   child.unref();
   for (let i = 0; i < 30 && !(await alive()); i++) await new Promise(r => setTimeout(r, 200));
 }

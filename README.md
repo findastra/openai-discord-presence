@@ -1,17 +1,17 @@
-# Astra Presence
+# OpenAI Presence
 
-A free Windows companion that displays **GPT-6 Astra**, the Astra spiral artwork, and an elapsed timer on your Discord profile.
+A free Windows companion that shows the exact OpenAI model you’re using (GPT-6 Astra, GPT-5.6 Sol, …), the project folder you’re working in, the Astra spiral artwork, and an elapsed timer on your Discord profile. Its sibling, [Anthropic Presence](https://github.com/findastra/anthropic-discord-presence), does the same for Claude, and both can show at once.
 
-**[Open the app](https://findastra.github.io/openai-discord-presence/)** · **[Download for Windows](https://findastra.github.io/openai-discord-presence/downloads/astra-presence-windows.zip)**
+**[Open the app](https://findastra.github.io/openai-discord-presence/)** · **[Download for Windows](https://findastra.github.io/openai-discord-presence/downloads/openai-presence-windows.zip)**
 
 ## Use it
 
 1. Download and extract the ZIP. Install [Node.js 24 or later](https://nodejs.org/en/download) if it is not already installed.
-2. Double-click **Start Astra Presence.cmd**. Your browser opens the local controls. No npm install is needed.
+2. Double-click **Start OpenAI Presence.cmd**. Your browser opens the local controls. No npm install is needed.
 3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application with any name (Discord blocks some brand names). The card's bold title always reads **OpenAI**: the app sends it with each update, in place of the application name.
 4. Upload `public/astra-galaxy.png` under **Rich Presence → Art Assets**, named **astra_galaxy**. Copy the Application ID from General Information.
 5. In the local app, expand **Connect to Discord**, paste the Application ID, and save.
-6. Open Discord desktop, sign in, and enable activity sharing in Discord's settings. Choose **Start session** or **Automatic** in Astra Presence.
+6. Open Discord desktop, sign in, and enable activity sharing in Discord's settings. Choose **Start session** or **Automatic** in OpenAI Presence.
 
 No bot token, API key, paid API, card, hosting subscription, or Discord server bot is required. Application creation may require Discord's terms acceptance. This project doesn't accept terms for you.
 
@@ -42,7 +42,7 @@ node --test
 node src/server.js
 ```
 
-The control panel runs at `http://127.0.0.1:38761/`. Optional `ASTRA_PORT` changes the port when running the server directly; the click-to-run launcher always uses the default port. Don't open `public/index.html` to control Discord: file mode is a styled public preview with a link to the companion.
+The control panel runs at `http://127.0.0.1:38761/`. Optional `OPENAI_PRESENCE_PORT` changes the port when running the server directly; the click-to-run launcher always uses the default port. Don't open `public/index.html` to control Discord: file mode is a styled public preview with a link to the companion.
 
 `node scripts/package.js` copies the public UI to `docs/` in hosted mode and builds an allowlisted ZIP. GitHub Pages serves `main` → `/docs`. There are no package dependencies or hosted compute functions. Changes are explained in [DEVELOPMENT.md](DEVELOPMENT.md).
 
@@ -60,6 +60,6 @@ The Discord app icon uses the original swirl without text. Animated Rich Presenc
 
 ## Hands-free startup
 
-After completing the connection setup, double-click **Enable Automatic Startup.cmd** once. It adds an Astra Presence launcher to your Windows user Startup folder and enables Automatic on startup. At your next Windows sign-in, the companion runs quietly with no browser or console window. Keep the extracted app folder in place. Discord desktop must also be running; the companion retries connecting when Discord becomes available.
+After completing the connection setup, double-click **Enable Automatic Startup.cmd** once. It adds an OpenAI Presence launcher to your Windows user Startup folder and enables Automatic on startup. At your next Windows sign-in, the companion runs quietly with no browser or console window. Keep the extracted app folder in place. Discord desktop must also be running; the companion retries connecting when Discord becomes available.
 
-Automatic mode detects recent Astra task metadata, not merely whether Codex is open. It hides activity after five minutes without a recent update. You can still stop sharing or quit from the local app. To prevent launch at sign-in, remove **Astra Presence.vbs** from the Windows Startup folder (Win+R, shell:startup), or run `node scripts/startup.js --remove`. The **Run on Windows startup** checkbox directly installs or removes the Windows startup entry.
+Automatic mode detects recent Codex task metadata, not merely whether Codex is open. It hides activity after five minutes without a recent update. You can still stop sharing or quit from the local app. To prevent launch at sign-in, remove **OpenAI Presence.vbs** from the Windows Startup folder (Win+R, shell:startup), or run `node scripts/startup.js --remove`. The **Run on Windows startup** checkbox directly installs or removes the Windows startup entry.
