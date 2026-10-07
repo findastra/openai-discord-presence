@@ -38,14 +38,25 @@ export function modelLabel(id) {
   return model;
 }
 
-export function activity(startedAt, image = 'astra_galaxy', project = '', model = '') {
+const EFFORTS = { minimal: 'Minimal', low: 'Low', medium: 'Medium', high: 'High', xhigh: 'Extra High', max: 'Max', ultra: 'Ultra' };
+
+// Friendly name for an effort level: 'high' → 'High', 'xhigh' → 'Extra High'. Unknown levels are capitalized; empty means unknown.
+export function effortLabel(id) {
+  const effort = String(id ?? '').trim().toLowerCase();
+  if (!/^[a-z-]{1,20}$/.test(effort)) return '';
+  return EFFORTS[effort] ?? cap(effort);
+}
+
+export function activity(startedAt, image = 'astra_galaxy', project = '', model = '', effort = '') {
   if (startedAt === null) return null;
   const name = modelLabel(model) || 'GPT-6 Astra';
+  // The effort level only means something next to a known model.
+  const level = modelLabel(model) ? effortLabel(effort) : '';
   return {
     type: 0,
     // Card title. Discord shows this instead of the registered app name, which can't be a brand name.
     name: 'OpenAI',
-    details: `Using ${name}`,
+    details: level ? `Using ${name} on ${level}` : `Using ${name}`,
     state: projectLabel(project) ? `Working on ${projectLabel(project)}` : 'Exploring ideas',
     timestamps: { start: startedAt },
     assets: { large_image: image, large_text: projectLabel(model).slice(0, 64) || name },

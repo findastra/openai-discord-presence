@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { Presence, isRecentTask, modelLabel, activity, validateConfig } from '../src/presence.js';
+import { Presence, isRecentTask, modelLabel, effortLabel, activity, validateConfig } from '../src/presence.js';
 import { detectAstra, folderProject } from '../src/detector.js';
 import { frame, Decoder, DiscordRPC } from '../src/rpc.js';
 import net from 'node:net';
@@ -83,6 +83,25 @@ test('read-only detector excludes subagents and follows the newest primary task 
     db.close();
     assert.equal(detectAstra(join(dir, 'missing')).active, false);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('detector reads the effort level when Codex records it, and works without it', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'astra-effort-'));
+  try {
+    const db = new DatabaseSync(join(dir, 'state_5.sqlite'));
+    db.exec('CREATE TABLE threads(model TEXT, updated_at INTEGER, archived INTEGER, source TEXT, agent_path TEXT, reasoning_effort TEXT)');
+    db.prepare("INSERT INTO threads VALUES ('gpt-6-astra', 999, 0, 'vscode', NULL, 'ultra')").run();
+    assert.equal(detectAstra(dir, 1_000_000).effort, 'ultra');
+    assert.equal(detectAstra(dir, 2_000_000).effort, '');
+    db.close();
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('the card names the effort level next to a known model', () => {
+  assert.equal(activity(17, 'astra_galaxy', '', 'gpt-6-astra', 'ultra').details, 'Using GPT-6 Astra on Ultra');
+  assert.equal(activity(17, 'astra_galaxy', '', 'gpt-5.6-sol', 'low').details, 'Using GPT-5.6 Sol on Low');
+  assert.equal(activity(17, 'astra_galaxy', '', 'gpt-6-astra', '').details, 'Using GPT-6 Astra');
+  assert.equal(activity(17, 'astra_galaxy', '', '', 'high').details, 'Using GPT-6 Astra');
+  assert.equal(effortLabel('xhigh'), 'Extra High');
+  assert.equal(effortLabel('<b>high</b>'), '');
 });
 test('project sharing is opt-in and project payload is bounded plain text', () => {
   assert.equal(validateConfig({ clientId: '123456789012345678' }).shareProject, false);

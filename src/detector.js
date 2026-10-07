@@ -31,14 +31,17 @@ export function detectAstra(home = process.env.CODEX_HOME || join(homedir(), '.c
     if (!files.length) return { active: false, message: 'Codex not found. Use Manual mode for ChatGPT or another app.' };
     db = new DatabaseSync(join(home, files[0]), { readOnly: true });
     db.exec('PRAGMA query_only = ON; PRAGMA busy_timeout = 250;');
-    const row = db.prepare(`SELECT model, updated_at${shareProject ? ', id, project_id, cwd' : ''} FROM threads
+    // Older Codex versions have no effort column; they still get a card, just without the level.
+    const hasEffort = db.prepare('PRAGMA table_info(threads)').all().some(c => c.name === 'reasoning_effort');
+    const row = db.prepare(`SELECT model, updated_at${hasEffort ? ', reasoning_effort' : ''}${shareProject ? ', id, project_id, cwd' : ''} FROM threads
       WHERE archived = 0 AND source IN ('vscode', 'cli')
       AND (agent_path IS NULL OR agent_path = '/root')
       ORDER BY updated_at DESC LIMIT 1`).get();
     const active = isRecentTask(row, now);
     const model = active ? projectLabel(row.model) : '';
+    const effort = active ? projectLabel(row.reasoning_effort ?? '') : '';
     const project = shareProject && active ? (folderProject(row.cwd) || resolveProject(home, row)) : '';
-    return { active, model, project, message: active ? `Recent ${modelLabel(model)} activity detected in Codex.` : 'Waiting for recent activity in Codex.' };
+    return { active, model, effort, project, message: active ? `Recent ${modelLabel(model)} activity detected in Codex.` : 'Waiting for recent activity in Codex.' };
   } catch {
     return { active: false, message: 'Automatic detection unavailable. Manual mode still works.' };
   } finally { db?.close(); }

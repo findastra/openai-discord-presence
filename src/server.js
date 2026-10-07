@@ -2,7 +2,7 @@ import http from 'node:http';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { Presence, activity, validateConfig, modelLabel } from './presence.js';
+import { Presence, activity, validateConfig, modelLabel, effortLabel } from './presence.js';
 import { detectAstra } from './detector.js';
 import { DiscordRPC } from './rpc.js';
 import { startupEnabled, setStartup } from './windows-startup.js';
@@ -47,7 +47,7 @@ async function sync() {
     }
     await rpc.connect(config.clientId);
     if (current !== revision || closing) { rerun = true; return; }
-    const payload = activity(presence.startedAt, config.image, currentProject(), detection.model);
+    const payload = activity(presence.startedAt, config.image, currentProject(), detection.model, detection.effort);
     const signature = JSON.stringify(payload);
     if (lastSent !== signature) {
       await rpc.setActivity(payload);
@@ -102,7 +102,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && req.url === '/api/status') {
       return send(res, 200, { app: 'openai-discord-presence', config, mode: presence.mode, startedAt: presence.startedAt, published,
-        connected: rpc.ready, message, startupEnabled: startupEnabled(), project: currentProject(), model: detection.model, modelLabel: modelLabel(detection.model) || 'GPT-6 Astra', detection: detection.message });
+        connected: rpc.ready, message, startupEnabled: startupEnabled(), project: currentProject(), model: detection.model, effortLabel: modelLabel(detection.model) ? effortLabel(detection.effort) : '', modelLabel: modelLabel(detection.model) || 'GPT-6 Astra', detection: detection.message });
     }
     if (req.method === 'POST') {
       if (req.headers.origin !== origin) return send(res, 403, { error: 'Open the local control panel to make changes.' });
