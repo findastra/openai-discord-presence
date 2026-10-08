@@ -2,7 +2,7 @@ import http from 'node:http';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { GALAXY_URL, Presence, activity, validateConfig, modelLabel, effortLabel } from './presence.js';
+import { BUILT_IN_CLIENT_ID, GALAXY_URL, Presence, activity, validateConfig, modelLabel, effortLabel } from './presence.js';
 import { detectAstra } from './detector.js';
 import { DiscordRPC } from './rpc.js';
 import { startupEnabled, setStartup } from './windows-startup.js';
@@ -12,7 +12,7 @@ const configPath = join(root, '.local', 'config.json');
 const port = Number(process.env.OPENAI_PRESENCE_PORT || 38761);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid OPENAI_PRESENCE_PORT.');
 const origin = `http://127.0.0.1:${port}`;
-let config = { clientId: '', image: GALAXY_URL };
+let config = { clientId: BUILT_IN_CLIENT_ID, image: GALAXY_URL };
 try { config = validateConfig(JSON.parse(readFileSync(configPath, 'utf8'))); } catch { /* Setup stays available. */ }
 const presence = new Presence();
 if (config.automaticOnStart) presence.setMode('auto');
@@ -99,6 +99,7 @@ const assets = {
   '/app.js': ['app.js', 'text/javascript; charset=utf-8'],
   '/style.css': ['style.css', 'text/css; charset=utf-8'],
   '/galaxy.png': ['galaxy.png', 'image/png'],
+  '/galaxy.gif': ['galaxy.gif', 'image/gif'],
 };
 
 const server = http.createServer(async (req, res) => {

@@ -5,13 +5,13 @@ import { crc32 } from 'node:zlib';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const docs = join(root, 'docs');
 mkdirSync(join(docs, 'downloads'), { recursive: true });
-for (const file of ['app.js', 'style.css', 'galaxy.png']) copyFileSync(join(root, 'public', file), join(docs, file));
+for (const file of ['app.js', 'style.css', 'galaxy.png', 'galaxy.gif']) copyFileSync(join(root, 'public', file), join(docs, file));
 writeFileSync(join(docs, 'index.html'), readFileSync(join(root, 'public/index.html'), 'utf8').replace('<body>', '<body data-hosted>'));
 writeFileSync(join(docs, '.nojekyll'), '');
 // Standard uncompressed ZIP: no executable bundler, package download, or build dependency.
 const files = ['README.md', 'DEVELOPMENT.md', 'LICENSE', 'package.json', 'Start OpenAI Presence.cmd', 'Enable Automatic Startup.cmd', 'scripts/startup.js',
   ...readdirSync(join(root, 'src')).filter(f => f.endsWith('.js')).map(f => `src/${f}`),
-  ...['index.html', 'style.css', 'app.js', 'galaxy.png'].map(f => `public/${f}`)];
+  ...['index.html', 'style.css', 'app.js', 'galaxy.png', 'galaxy.gif'].map(f => `public/${f}`)];
 const entries = []; const central = []; let offset = 0;
 for (const file of files) {
   const data = readFileSync(join(root, file));

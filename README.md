@@ -1,5 +1,19 @@
 # OpenAI Presence
 
+![Swirling galaxy](public/galaxy.gif)
+
+## Download (for friends)
+
+**[⬇ Download OpenAI Presence for Windows](https://github.com/findastra/openai-discord-presence/archive/refs/heads/main.zip)**
+
+1. Install [Node.js 24 or later](https://nodejs.org/en/download) if you don't have it.
+2. Unzip the download anywhere you like.
+3. Double-click **Start OpenAI Presence.cmd**. Your browser opens the controls.
+4. Click **Automatic**. It shares while you use Codex. Keep Discord desktop open.
+5. Optional: double-click **Enable Automatic Startup.cmd** once so it starts with Windows.
+
+No Discord setup needed: the app comes with its own Discord application built in.
+
 A free Windows companion that shows the exact OpenAI model you’re using (GPT-6 Astra, GPT-5.6 Sol, …), the project folder you’re working in, the Astra spiral artwork, and an elapsed timer on your Discord profile. Its sibling, [Anthropic Presence](https://github.com/findastra/anthropic-discord-presence), does the same for Claude, and both can show at once.
 
 **[Open the app](https://findastra.github.io/openai-discord-presence/)** · **[Download for Windows](https://findastra.github.io/openai-discord-presence/downloads/openai-presence-windows.zip)**
@@ -8,7 +22,7 @@ A free Windows companion that shows the exact OpenAI model you’re using (GPT-6
 
 1. Download and extract the ZIP. Install [Node.js 24 or later](https://nodejs.org/en/download) if it is not already installed.
 2. Double-click **Start OpenAI Presence.cmd**. Your browser opens the local controls. No npm install is needed.
-3. In the [Discord Developer Portal](https://discord.com/developers/applications), create an application with any name (Discord blocks some brand names). The card's bold title always reads **OpenAI**: the app sends it with each update, in place of the application name.
+3. In the [Discord Developer Portal](https://discord.com/developers/applications), optional: only if you want your own Discord application instead of the built-in one, create an application with any name (Discord blocks some brand names). The card's bold title always reads **OpenAI**: the app sends it with each update, in place of the application name.
 4. Copy the Application ID from General Information. No art upload is needed: the card loads `public/galaxy.png` from this repo.
 5. In the local app, expand **Connect to Discord**, paste the Application ID, and save.
 6. Open Discord desktop, sign in, and enable activity sharing in Discord's settings. Choose **Start session** or **Automatic** in OpenAI Presence.
